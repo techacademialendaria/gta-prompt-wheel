@@ -24,6 +24,7 @@ interface WheelComponentProps {
   onSelect: (promptId: string) => void;
   onClose: () => void;
   mousePosition: { x: number; y: number };
+  showDebugInfo?: boolean;
 }
 
 /* ──────────── Prompts demo ──────────── */
@@ -47,6 +48,7 @@ const WheelComponent: React.FC<WheelComponentProps> = ({
   onSelect,
   onClose,
   mousePosition,
+  showDebugInfo = false,
 }) => {
   /* prompts (usa demo se não houver) */
   
@@ -264,16 +266,18 @@ const WheelComponent: React.FC<WheelComponentProps> = ({
       id="wheel-container"
       className="fixed inset-0 bg-black bg-opacity-30 select-none pointer-events-auto"
     >
-      {/* Debug overlay */}
-      <div className="fixed top-0 left-0 bg-black bg-opacity-70 text-white p-2 text-xs z-50 font-mono pointer-events-none">
-        <div>Mouse Initial: x={mousePosition.x}, y={mousePosition.y}</div>
-        <div>Wheel Position: x={wheelPosition.x.toFixed(0)}, y={wheelPosition.y.toFixed(0)}</div>
-        <div>Wheel Size: {size.width.toFixed(0)}×{size.height.toFixed(0)}</div>
-        <div>Rel Center: x={debugInfo.relX.toFixed(0)}, y={debugInfo.relY.toFixed(0)}</div>
-        <div>Distance: {debugInfo.distance.toFixed(0)}px</div>
-        <div>Angle: {debugInfo.angle.toFixed(0)}°, Segment: {debugInfo.segmentIndex}</div>
-        <div>Selected Segment: {selectedSegment ?? 'none'}</div>
-      </div>
+      {/* Debug overlay - Renderiza condicionalmente */}
+      {showDebugInfo && (
+        <div className="fixed top-0 left-0 bg-black bg-opacity-70 text-white p-2 text-xs z-50 font-mono pointer-events-none">
+          <div>Mouse Initial: x={mousePosition.x}, y={mousePosition.y}</div>
+          <div>Wheel Position: x={wheelPosition.x.toFixed(0)}, y={wheelPosition.y.toFixed(0)}</div>
+          <div>Wheel Size: {size.width.toFixed(0)}×{size.height.toFixed(0)}</div>
+          <div>Rel Center: x={debugInfo.relX.toFixed(0)}, y={debugInfo.relY.toFixed(0)}</div>
+          <div>Distance: {debugInfo.distance.toFixed(0)}px</div>
+          <div>Angle: {debugInfo.angle.toFixed(0)}°, Segment: {debugInfo.segmentIndex}</div>
+          <div>Selected Segment: {selectedSegment ?? 'none'}</div>
+        </div>
+      )}
 
       {/* Roda */}
       <motion.div
@@ -289,70 +293,63 @@ const WheelComponent: React.FC<WheelComponentProps> = ({
           top: wheelPosition.y,
         }}
       >
-        {/* Indicador de categoria */}
-        <div className="absolute" style={{ top: -40, width: '100%' }}>
-          <CategoryIndicator
-            categories={categories}
-            currentCategoryId={currentCategoryId}
-            onCategoryChange={onCategoryChange}
-          />
-        </div>
-
-        {/* Círculos de detecção e divisões (debug visual) */}
-        <svg
-          width={size.width}
-          height={size.height}
-          viewBox={`0 0 ${size.width} ${size.height}`}
-          className="absolute top-0 left-0 pointer-events-none"
-          style={{ zIndex: 5 }}
-        >
-          <circle
-            cx={centerX}
-            cy={centerY}
-            r={innerDetectionRadius}
-            fill="none"
-            stroke="rgba(255,0,0,0.3)"
-            strokeWidth="1"
-            strokeDasharray="5,5"
-          />
-          <circle
-            cx={centerX}
-            cy={centerY}
-            r={outerDetectionRadius}
-            fill="none"
-            stroke="rgba(255,0,0,0.3)"
-            strokeWidth="1"
-            strokeDasharray="5,5"
-          />
-          {segments.map((seg) => (
-            <line
-              key={seg.index}
-              x1={centerX}
-              y1={centerY}
-              x2={centerX + Math.cos(seg.angle) * outerDetectionRadius}
-              y2={centerY + Math.sin(seg.angle) * outerDetectionRadius}
-              stroke="rgba(255,255,255,0.15)"
+        {/* Círculos de detecção e divisões (debug visual) - Renderiza condicionalmente */}
+        {showDebugInfo && (
+          <svg
+            width={size.width}
+            height={size.height}
+            viewBox={`0 0 ${size.width} ${size.height}`}
+            className="absolute top-0 left-0 pointer-events-none"
+            style={{ zIndex: 5 }}
+          >
+            <circle
+              cx={centerX}
+              cy={centerY}
+              r={innerDetectionRadius}
+              fill="none"
+              stroke="rgba(255,0,0,0.3)"
               strokeWidth="1"
-            />
-          ))}
-          {selectedSegment !== null && (
-            <line
-              x1={centerX}
-              y1={centerY}
-              x2={
-                centerX +
-                Math.cos(segments[selectedSegment].angle) * outerDetectionRadius
-              }
-              y2={
-                centerY +
-                Math.sin(segments[selectedSegment].angle) * outerDetectionRadius
-              }
-              stroke="rgba(0,100,255,0.7)"
-              strokeWidth="2"
               strokeDasharray="5,5"
             />
-          )}
-        </svg>
+            <circle
+              cx={centerX}
+              cy={centerY}
+              r={outerDetectionRadius}
+              fill="none"
+              stroke="rgba(255,0,0,0.3)"
+              strokeWidth="1"
+              strokeDasharray="5,5"
+            />
+            {segments.map((seg) => (
+              <line
+                key={seg.index}
+                x1={centerX}
+                y1={centerY}
+                x2={centerX + Math.cos(seg.angle) * outerDetectionRadius}
+                y2={centerY + Math.sin(seg.angle) * outerDetectionRadius}
+                stroke="rgba(255,255,255,0.15)"
+                strokeWidth="1"
+              />
+            ))}
+            {selectedSegment !== null && (
+              <line
+                x1={centerX}
+                y1={centerY}
+                x2={
+                  centerX +
+                  Math.cos(segments[selectedSegment].angle) * outerDetectionRadius
+                }
+                y2={
+                  centerY +
+                  Math.sin(segments[selectedSegment].angle) * outerDetectionRadius
+                }
+                stroke="rgba(0,100,255,0.7)"
+                strokeWidth="2"
+                strokeDasharray="5,5"
+              />
+            )}
+          </svg>
+        )}
 
         {/* Círculo central escuro */}
         <div
@@ -434,8 +431,8 @@ const WheelComponent: React.FC<WheelComponentProps> = ({
           })}
         </svg>
 
-        {/* linha amarelinha */}
-        <CursorIndicator />
+        {/* linha amarelinha - Renderiza condicionalmente */}
+        {showDebugInfo && <CursorIndicator />}
       </motion.div>
     </div>
   );
