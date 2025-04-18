@@ -426,12 +426,13 @@ const WheelComponent: React.FC<WheelComponentProps> = ({
                 // Detectar proximidade com bordas da tela
                 const viewportWidth = window.innerWidth;
                 const wheelCenterX = wheelPosition.x;
+                const offset = wheelRadius * 1.3; // Distância consistente do centro
                 
                 // Se a roda estiver próxima da borda direita, posicione o texto à esquerda
                 if (wheelCenterX > viewportWidth - size.width / 2 - 100) {
                   return {
                     right: 'auto',
-                    left: centerX - wheelRadius * 1.3,
+                    left: centerX - offset,
                     transform: 'translateY(-50%) translateX(-100%)'
                   };
                 } 
@@ -439,26 +440,28 @@ const WheelComponent: React.FC<WheelComponentProps> = ({
                 else if (wheelCenterX < size.width / 2 + 100) {
                   return {
                     left: 'auto',
-                    right: -wheelRadius * 0.7,
-                    transform: 'translateY(-50%)'
+                    right: size.width - centerX - offset,
+                    transform: 'translateY(-50%) translateX(100%)'
                   };
                 }
                 // Caso contrário, use a posição baseada no ângulo do segmento
                 else {
                   const angle = segments[selectedSegment].angle;
-                  const normalizedAngle = ((Math.atan2(Math.sin(angle), Math.cos(angle)) * 180 / Math.PI) + 360) % 360;
+                  // Simplificar para usar diretamente o ângulo em graus
+                  const angleDegrees = (angle * 180 / Math.PI) % 360;
                   
-                  if (normalizedAngle > 270 || normalizedAngle < 90) {
+                  // Dividir em quadrantes de forma simétrica (esquerda/direita)
+                  if (angleDegrees > 270 || angleDegrees < 90) {
                     return {
                       right: 'auto',
-                      left: centerX - wheelRadius * 1.3,
+                      left: centerX - offset,
                       transform: 'translateY(-50%) translateX(-100%)'
                     };
                   } else {
                     return {
                       left: 'auto',
-                      right: -wheelRadius * 0.7,
-                      transform: 'translateY(-50%)'
+                      right: size.width - centerX - offset,
+                      transform: 'translateY(-50%) translateX(100%)'
                     };
                   }
                 }
