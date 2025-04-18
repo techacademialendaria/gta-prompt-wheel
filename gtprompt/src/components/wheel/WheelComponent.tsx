@@ -409,28 +409,39 @@ const WheelComponent: React.FC<WheelComponentProps> = ({
                       seg.prompt.content.substring(0, 2).toUpperCase()}
                   </text>
                 </g>
-                {/* label */}
-                <text
-                  x={centerX + wheelRadius * 0.8 * Math.cos(seg.angle)}
-                  y={centerY + wheelRadius * 0.8 * Math.sin(seg.angle)}
-                  textAnchor="middle"
-                  dominantBaseline="middle"
-                  fill="#FFFFFF"
-                  fontSize={
-                    isSel
-                      ? Math.max(Math.floor(wheelRadius * 0.07 / 4) * 4, 16)
-                      : Math.max(Math.floor(wheelRadius * 0.06 / 4) * 4, 12)
-                  }
-                  fontWeight={isSel ? 'bold' : 'normal'}
-                >
-                  {seg.prompt.content.length > 15
-                    ? `${seg.prompt.content.slice(0, 15)}…`
-                    : seg.prompt.content}
-                </text>
               </g>
             );
           })}
         </svg>
+        
+        {/* Texto flutuante do prompt selecionado */}
+        {selectedSegment !== null && segments[selectedSegment]?.prompt && (
+          <motion.div 
+            initial={{ y: 20, opacity: 0 }}
+            animate={{ y: 0, opacity: 1 }}
+            transition={{ duration: 0.2 }}
+            className="absolute"
+            style={{
+              left: centerX,
+              top: centerY - wheelRadius * 1.5,
+              transform: 'translateX(-50%)',
+              width: 'max-content'
+            }}
+          >
+            <div
+              style={{
+                backgroundColor: '#FD6649',
+                padding: '8px 16px',
+                borderRadius: '4px',
+                color: '#FFFFFF',
+                fontWeight: 'bold',
+                fontSize: Math.max(Math.floor(wheelRadius * 0.07 / 4) * 4, 16)
+              }}
+            >
+              {segments[selectedSegment].prompt.content}
+            </div>
+          </motion.div>
+        )}
         
         {/* linha indicadora - Renderiza condicionalmente */}
         {showDebugInfo && <CursorIndicator />}
