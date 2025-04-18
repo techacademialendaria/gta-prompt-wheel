@@ -414,18 +414,58 @@ const WheelComponent: React.FC<WheelComponentProps> = ({
           })}
         </svg>
         
-        {/* Texto flutuante do prompt selecionado */}
+        {/* Texto flutuante do prompt selecionado - posição ajustada baseada na borda da tela */}
         {selectedSegment !== null && segments[selectedSegment]?.prompt && (
           <motion.div 
-            initial={{ y: 20, opacity: 0 }}
-            animate={{ y: 0, opacity: 1 }}
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
             transition={{ duration: 0.2 }}
             className="absolute"
             style={{
-              left: centerX,
-              top: centerY - wheelRadius * 1.5,
-              transform: 'translateX(-50%)',
-              width: 'max-content'
+              ...(function() {
+                // Detectar proximidade com bordas da tela
+                const viewportWidth = window.innerWidth;
+                const wheelCenterX = wheelPosition.x;
+                
+                // Se a roda estiver próxima da borda direita, posicione o texto à esquerda
+                if (wheelCenterX > viewportWidth - size.width / 2 - 100) {
+                  return {
+                    right: 'auto',
+                    left: centerX - wheelRadius * 1.3,
+                    transform: 'translateY(-50%) translateX(-100%)'
+                  };
+                } 
+                // Se a roda estiver próxima da borda esquerda, posicione o texto à direita
+                else if (wheelCenterX < size.width / 2 + 100) {
+                  return {
+                    left: 'auto',
+                    right: -wheelRadius * 0.7,
+                    transform: 'translateY(-50%)'
+                  };
+                }
+                // Caso contrário, use a posição baseada no ângulo do segmento
+                else {
+                  const angle = segments[selectedSegment].angle;
+                  const normalizedAngle = ((Math.atan2(Math.sin(angle), Math.cos(angle)) * 180 / Math.PI) + 360) % 360;
+                  
+                  if (normalizedAngle > 270 || normalizedAngle < 90) {
+                    return {
+                      right: 'auto',
+                      left: centerX - wheelRadius * 1.3,
+                      transform: 'translateY(-50%) translateX(-100%)'
+                    };
+                  } else {
+                    return {
+                      left: 'auto',
+                      right: -wheelRadius * 0.7,
+                      transform: 'translateY(-50%)'
+                    };
+                  }
+                }
+              })(),
+              top: centerY,
+              zIndex: 10,
+              maxWidth: wheelRadius * 2
             }}
           >
             <div
@@ -435,7 +475,9 @@ const WheelComponent: React.FC<WheelComponentProps> = ({
                 borderRadius: '4px',
                 color: '#FFFFFF',
                 fontWeight: 'bold',
-                fontSize: Math.max(Math.floor(wheelRadius * 0.07 / 4) * 4, 16)
+                fontSize: Math.max(Math.floor(wheelRadius * 0.07 / 4) * 4, 16),
+                textAlign: 'center',
+                whiteSpace: 'nowrap'
               }}
             >
               {segments[selectedSegment].prompt.content}

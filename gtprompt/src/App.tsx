@@ -70,9 +70,9 @@ function App() {
 
   return (
     <main className="container mx-auto px-4 py-8">
-            
       {isWheelVisible && (
         <>
+          {/* Wheel Component */}
           <WheelComponent 
             prompts={prompts.map(p => ({ 
               id: p.id, 
@@ -88,7 +88,8 @@ function App() {
             showDebugInfo={showDebug}
           />
           
-          <div className="fixed top-10 left-1/2 transform -translate-x-1/2 z-20 pointer-events-auto">
+          {/* Indicador de categorias - separado da roda mas visível junto */}
+          <div className="fixed top-10 right-10 z-20 pointer-events-auto">
             <CategoryIndicator 
               categories={categories} 
               currentCategoryId={currentCategoryId} 

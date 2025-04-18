@@ -14,34 +14,35 @@ A system-wide, GTA5-inspired prompt selection widget allowing AI enthusiasts and
 ### Core Requirements
 
 #### Activation & Interface
-- Global hotkey activation (Alt+Shift+') that works system-wide
-- Translucent GTA5-style weapon wheel interface (highly faithful to GTA5)
-- Mouse-based selection of prompts
+- ✅ Global hotkey activation (Alt+Shift) that works system-wide
+- ✅ Translucent GTA5-style weapon wheel interface (highly faithful to GTA5)
+- ✅ Mouse-based selection of prompts
 
 #### Prompt Management
-- Storage for unlimited prompts in the "arsenal"
-- Display of 8 selectable prompts in the wheel at any time
-- Category system with mouse wheel rotation to switch between categories
-- Import/export functionality for sharing prompt collections
-- Custom sprites/icons for different prompt types or categories
-- Simple text replacement variables (Phase 1)
-- Application-stored variables for more complex replacements (Phase 2)
+- ✅ Display of 8 selectable prompts in the wheel at any time
+- ✅ Custom sprites/icons for different prompt types or categories
+- ✅ Category system with indicator
+- 🔄 Storage for unlimited prompts in the "arsenal" (in progresso)
+- 🔄 Mouse wheel rotation to switch between categories (em implementação)
+- ❌ Import/export functionality for sharing prompt collections (pendente)
+- ❌ Simple text replacement variables (Phase 1) (pendente)
+- ❌ Application-stored variables for more complex replacements (Phase 2) (pendente)
 
 #### Analytics & Feedback
-- Usage statistics tracking (times used, last used date)
-- Visual feedback when selecting a prompt
+- ✅ Visual feedback when selecting a prompt (destaque em laranja e painel flutuante)
+- ❌ Usage statistics tracking (times used, last used date) (pendente)
 
 #### Platform Compatibility
-- Cross-platform support (Windows, macOS, Linux)
-- Works in both browsers and desktop applications
+- 🔄 Cross-platform support (Windows e web implementados, macOS e Linux pendentes)
+- ✅ Works in both browsers and desktop applications
 
 ### User Flow
-1. User presses Alt+Shift+' from any application
-2. Translucent GTA-style wheel appears on screen
-3. User navigates categories with mouse wheel
-4. User selects desired prompt with mouse
-5. Selected prompt is immediately pasted at cursor position
-6. Widget disappears after selection
+1. ✅ User presses Alt+Shift from any application
+2. ✅ Translucent GTA-style wheel appears on screen
+3. 🔄 User navigates categories with mouse wheel (em implementação)
+4. ✅ User selects desired prompt with mouse
+5. ✅ Selected prompt is immediately copied to clipboard
+6. ✅ Widget disappears after selection
 
 ## Architecture Design Record (ADR)
 
@@ -51,115 +52,81 @@ A Tauri-based application combining a Rust backend with a React frontend.
 ### Technical Stack
 
 #### Frontend
-- Framework: React with TypeScript
-- Styling: TailwindCSS
-- Animation: Framer Motion
-- SVG Handling: react-svg
+- ✅ Framework: React with TypeScript
+- ✅ Styling: TailwindCSS
+- ✅ Animation: Framer Motion
+- ❌ SVG Handling: react-svg (substituído por implementação nativa SVG)
 
 #### Backend
-- Framework: Tauri core
-- Database: rusqlite for SQLite interactions
-- System Integration: Tauri APIs for global shortcuts, clipboard operations, and window management
+- 🔄 Framework: Tauri core (em implementação)
+- ❌ Database: rusqlite for SQLite interactions (pendente)
+- 🔄 System Integration: Tauri APIs for global shortcuts, clipboard operations, and window management (parcialmente implementado)
 
 #### Data Storage
-- Database: SQLite with optional encryption
-- Data Model:
-  ```
-  Prompts {
-    id: UUID
-    content: TEXT
-    category_id: UUID
-    icon_path: TEXT (optional)
-    created_at: TIMESTAMP
-    variables: JSON (for text replacement)
-  }
-
-  Categories {
-    id: UUID
-    name: TEXT
-    color: TEXT
-    position: INTEGER
-  }
-
-  Usage {
-    prompt_id: UUID
-    used_count: INTEGER
-    last_used: TIMESTAMP
-  }
-  ```
+- ❌ Database: SQLite with optional encryption (pendente)
+- ❌ Data Model implementado (pendente)
 
 ### Core Components
 
 #### Rust Backend Components
-1. **Global Hotkey Manager**: Registers and listens for Alt+Shift+'
-2. **Window Manager**: Controls transparent overlay positioning and visibility
-3. **System Integration**: Handles clipboard operations and input events
-4. **Database Interface**: Manages SQLite operations for prompts and statistics
+1. 🔄 **Global Hotkey Manager**: Registers and listens for Alt+Shift (implementado)
+2. 🔄 **Window Manager**: Controls transparent overlay positioning and visibility (implementado)
+3. 🔄 **System Integration**: Handles clipboard operations and input events (parcialmente implementado)
+4. ❌ **Database Interface**: Manages SQLite operations for prompts and statistics (pendente)
 
 #### React Frontend Components
-1. **Wheel Component**: GTA-style circular UI with segments
-2. **Prompt Manager**: Handles CRUD operations for prompts
-3. **Category Navigator**: Controls switching between categories
-4. **Statistics Tracker**: Displays and updates usage metrics
+1. ✅ **Wheel Component**: GTA-style circular UI with segments
+2. ❌ **Prompt Manager**: Handles CRUD operations for prompts (pendente)
+3. 🔄 **Category Navigator**: Controls switching between categories (parcialmente implementado)
+4. ❌ **Statistics Tracker**: Displays and updates usage metrics (pendente)
 
 ### Implementation Plan
 
-#### Phase 1: Foundation
-- Setup Tauri project with React
-- Implement global hotkeys and transparent window
-- Create database schema and basic CRUD operations
+#### Phase 1: Foundation ✅
+- ✅ Setup project with React
+- ✅ Implement transparent window
+- 🔄 Create data structures for basic operations
 
-#### Phase 2: UI Implementation
-- Develop accurate SVG-based wheel matching GTA5 design
-- Implement segment highlighting and selection
-- Add sprite/icon support for prompts
+#### Phase 2: UI Implementation ✅
+- ✅ Develop accurate SVG-based wheel matching GTA5 design
+- ✅ Implement segment highlighting and selection
+- ✅ Add sprite/icon support for prompts
 
-#### Phase 3: Core Functionality
-- Implement prompt selection and pasting
-- Add variable replacement system
-- Create category navigation with mouse wheel
+#### Phase 3: Core Functionality 🔄
+- ✅ Implement prompt selection and pasting
+- ❌ Add variable replacement system (pendente)
+- 🔄 Create category navigation with mouse wheel (em implementação)
 
-#### Phase 4: Advanced Features
-- Add import/export for prompt libraries
-- Implement settings and customization
-- Optimize performance and memory usage
+#### Phase 4: Advanced Features ❌
+- ❌ Add import/export for prompt libraries (pendente)
+- ❌ Implement settings and customization (pendente)
+- ❌ Optimize performance and memory usage (pendente)
 
-### Project Structure (Suggested)
+### Project Structure (Atual)
 ```
-/
-├── src/                     # Rust backend code
-│   ├── main.rs              # Entry point
-│   ├── hotkey.rs            # Global hotkey handling
-│   ├── window.rs            # Transparent window management
-│   ├── clipboard.rs         # Clipboard operations
-│   └── database/            # Database operations
-│       ├── mod.rs
-│       ├── prompts.rs
-│       ├── categories.rs
-│       └── usage.rs
-│
-├── src-tauri/               # Tauri configuration
-│   ├── tauri.conf.json      # Tauri config
-│   └── icons/               # Application icons
-│
-└── ui/                      # Frontend
-    ├── src/
-    │   ├── components/
-    │   │   ├── WheelComponent.tsx    # Main wheel UI
-    │   │   ├── PromptSegment.tsx     # Individual prompt segment
-    │   │   ├── CategoryIndicator.tsx # Category display
-    │   │   └── StatsDisplay.tsx      # Usage statistics
-    │   ├── hooks/
-    │   │   ├── usePrompts.ts         # Prompt data management
-    │   │   ├── useCategories.ts      # Category navigation
-    │   │   └── useSelection.ts       # Selection handling
-    │   ├── services/
-    │   │   ├── promptService.ts      # Backend communication
-    │   │   └── clipboardService.ts   # Clipboard operations
-    │   ├── App.tsx
-    │   └── index.tsx
-    ├── public/
-    └── package.json
+/gtprompt/
+├── src/                     # Frontend code
+│   ├── App.tsx              # Entry point
+│   ├── App.css              # Styling
+│   ├── components/          # UI Components
+│   │   └── wheel/           # Wheel-related components
+│   │       ├── WheelComponent.tsx    # Main wheel UI
+│   │       └── CategoryIndicator.tsx # Category display
+│   ├── hooks/
+│   │   └── usePrompts.ts           # Prompt data management
+│   ├── services/
+│   │   └── clipboardService.ts     # Clipboard operations
+│   └── index.tsx
+├── public/
+└── package.json
 ```
 
-This summary provides a solid foundation to begin implementation with Cursor. Let me know if you need more specific details on any component or if you'd like to adjust the architecture before proceeding.
+## Próximos Passos
+
+1. Implementar mudança de categorias com roda do mouse
+2. Criar sistema de armazenamento persistente para prompts e categorias
+3. Desenvolver interface de administração para gerenciar prompts
+4. Implementar sistema de variáveis para substituição nos prompts
+5. Adicionar funcionalidades de importação/exportação para coleções de prompts
+
+Estas atualizações refletem o progresso atual e o caminho a seguir no projeto. Muitos componentes fundamentais da UI estão implementados, com foco agora na funcionalidade completa do sistema.
