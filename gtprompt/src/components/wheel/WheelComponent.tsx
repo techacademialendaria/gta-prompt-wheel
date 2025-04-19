@@ -1,14 +1,16 @@
 import React, { useState, useEffect, useMemo, useRef } from 'react';
 import { motion } from 'framer-motion';
-import CategoryIndicator from './CategoryIndicator';
 
 /* ──────────── Tipos ──────────── */
+// Remover interface não utilizada
+/*
 interface Category {
   id: string;
   name: string;
   color: string;
   position: number;
 }
+*/
 
 interface Prompt {
   id: string;
@@ -18,9 +20,6 @@ interface Prompt {
 
 interface WheelComponentProps {
   prompts: Prompt[];
-  categories: Category[];
-  currentCategoryId: string;
-  onCategoryChange: (categoryId: string) => void;
   onSelect: (promptId: string) => void;
   onClose: () => void;
   mousePosition: { x: number; y: number };
@@ -42,9 +41,6 @@ const DEMO_PROMPTS: Prompt[] = [
 /* ──────────── Componente ──────────── */
 const WheelComponent: React.FC<WheelComponentProps> = ({ 
   prompts: providedPrompts, 
-  categories, 
-  currentCategoryId,
-  onCategoryChange,
   onSelect, 
   onClose,
   mousePosition,

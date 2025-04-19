@@ -1,4 +1,5 @@
 import { useState, useEffect } from "react";
+import { listen } from '@tauri-apps/api/event';
 import "./App.css";
 import WheelComponent from "./components/wheel/WheelComponent";
 import CategoryIndicator from "./components/wheel/CategoryIndicator";
@@ -18,7 +19,31 @@ function App() {
     usePrompt 
   } = usePrompts();
 
-  // Handle keyboard shortcuts to show/hide wheel
+  // Listener for global shortcut event from Tauri backend
+  useEffect(() => {
+    let unlisten: (() => void) | undefined;
+
+    const setupListener = async () => {
+      try {
+        unlisten = await listen('global-shortcut-triggered', (event) => {
+          console.log(`Global shortcut event received: ${event.payload}`);
+          // TODO: Possibly use event.payload if needed in the future
+          // Ação: Mostrar a roda
+          setIsWheelVisible(true); 
+        });
+      } catch (e) {
+        console.error("Failed to set up global shortcut listener:", e);
+      }
+    };
+
+    setupListener();
+
+    return () => {
+      unlisten?.(); // Cleanup the listener on component unmount
+    };
+  }, []); // Empty dependency array ensures this runs once on mount
+
+  // Handle keyboard shortcuts to show/hide wheel (OLD logic)
   useEffect(() => {
     const handleMouseMove = (e: MouseEvent) => {
       // Continuamente atualizar a posição do mouse
@@ -26,19 +51,26 @@ function App() {
     };
     
     const handleKeyDown = (e: KeyboardEvent) => {
-      // Show the wheel when Alt+Shift is pressed
-      if (e.altKey && e.shiftKey) {
-        // Use posição atual do mouse quando as teclas são pressionadas
-        setShowDebug(e.ctrlKey);
-        setIsWheelVisible(true);
+      // Show the wheel when Alt+Shift is pressed (OLD LOGIC - handled by global shortcut now)
+      // if (e.altKey && e.shiftKey) {
+      //   setShowDebug(e.ctrlKey);
+      //   setIsWheelVisible(true);
+      // }
+
+      // Example: Keep Esc key to hide the wheel
+      if (e.key === 'Escape') {
+        setIsWheelVisible(false);
+        setShowDebug(false);
       }
     };
 
     const handleKeyUp = (e: KeyboardEvent) => {
-      // Hide the wheel when either Alt or Shift is released
+      // Hide the wheel when either Alt or Shift is released (MAYBE REMOVE/ADJUST THIS?)
+      // Keeping it for now, might conflict or be redundant with global shortcut
       if (!e.altKey || !e.shiftKey) {
-        setIsWheelVisible(false);
-        setShowDebug(false);
+        // Consider removing this if Escape or clicking outside is preferred
+        // setIsWheelVisible(false); 
+        // setShowDebug(false);
       }
     };
 
@@ -79,9 +111,6 @@ function App() {
               content: p.content,
               icon: p.iconPath 
             }))}
-            categories={categories}
-            currentCategoryId={currentCategoryId}
-            onCategoryChange={changeCategory}
             onSelect={handleSelectPrompt}
             onClose={() => setIsWheelVisible(false)}
             mousePosition={mousePosition}
